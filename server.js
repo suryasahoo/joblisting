@@ -1,10 +1,13 @@
 import 'dotenv/config'
 import express from "express"
 import mongoose from "mongoose"
+import { router } from './routes/auth.js'
 
 
 // connect to server
 const app = express()
+
+app.use(express.json())
 
 //Health api
 
@@ -16,9 +19,13 @@ app.get("/health", (req, res) => {
     })
 })
 
+app.use(router)
+
 
 // connect to db
-mongoose.connect(process.env.MONGODB_URI).then(() => console.log("Db connected"))
+mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => console.log("Db connected"))
     .catch((error) => console.log("failed to connect", error))
 
 const PORT = process.env.PORT || 3000
