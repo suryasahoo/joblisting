@@ -2,6 +2,8 @@ import 'dotenv/config'
 import express from "express"
 import mongoose from "mongoose"
 import { router } from './routes/auth.js'
+import { jobRouter } from './routes/jobs.js'
+
 
 
 // connect to server
@@ -20,6 +22,7 @@ app.get("/health", (req, res) => {
 })
 
 app.use(router)
+app.use("/api/v1/job", jobRouter)
 
 
 // connect to db
