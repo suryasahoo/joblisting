@@ -54,7 +54,7 @@ jobRouter.put("/edit/:jobId", verifyToken, async(req, res) => {
         const { companyName, logoUrl, title, description, } = req.body
         const jobId = req.params.jobId
 
-        if (!companyName || !logoUrl || !title || !description) {
+        if (!companyName || !logoUrl || !title || !description || !jobId) {
             return res.status(400).json({
                 errorMessage: "Bad Request",
             })
@@ -82,5 +82,68 @@ jobRouter.put("/edit/:jobId", verifyToken, async(req, res) => {
 
     }
 })
+
+jobRouter.get("/job-description/:jobId", async(req, res) => {
+
+    try {
+
+        const jobId = req.params.jobId
+
+        if (!jobId) {
+            return res.status(400).json({
+                errorMessage: "Bad Request",
+            })
+        }
+
+        const jobDetails = await Job.findById(jobId, { companyName: 1, title: 1 })
+
+
+
+        res.json({ data: jobDetails, message: "Data Loaded successfully on server" })
+
+    } catch (error) {
+        console.log("error")
+        res.status(500).json({ errorMessage: "Internal Server Error" });
+
+
+
+    }
+})
+
+jobRouter.get("/all", async(req, res) => {
+
+    try {
+        const title = req.query.title || ""
+        const skills = req.query.skills
+        let filterSkills = skills ? skills.split(",") : null
+
+        // skills ? .split(",")
+
+
+
+        let filter = {}
+
+        if (filterSkills) {
+            filter = { skills: { $in: [...filterSkills] } }
+        }
+
+        const jobList = await Job.find({
+            title: { $regex: title, $options: "i" },
+            ...filter
+        }, {})
+
+
+
+        res.json({ data: jobList, message: "Data Loaded successfully on server" })
+
+    } catch (error) {
+        console.log("error")
+        res.status(500).json({ errorMessage: "Internal Server Error" });
+
+
+
+    }
+})
+
 
 export { jobRouter }
